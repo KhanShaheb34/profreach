@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "49d3f675e346",
+  "session_id": "167f2196-40a9-414a-a517-07fa040fff66",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-16T19:28:35.664667Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "README.md"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "71988031-b49a-421f-a20c-75f030af9d80",
+  "checkpoint_transcript_start": 1027,
+  "transcript_lines_at_start": 1027,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 184597,
+    "cache_read_tokens": 31074,
+    "output_tokens": 1070,
+    "api_call_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-16T19:28:35.278305Z",
+    "agent_lines": 61,
+    "human_added": 40,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 101,
+    "agent_percentage": 60.396039603960396
+  },
+  "transcript_path": ".claude/projects/-Users-shakirulhkhan-Documents-Developer-experiments-profreach/167f2196-40a9-414a-a517-07fa040fff66.jsonl"
+}
