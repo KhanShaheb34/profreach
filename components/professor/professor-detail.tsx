@@ -56,15 +56,13 @@ export function ProfessorDetail({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-6">
-          <ProfessorInfoPanel professor={professor} />
-          <EmailDraftSection professor={professor} />
-        </div>
-        <div>
-          <ChatSection professor={professor} />
-        </div>
+      <div className="space-y-6">
+        <ProfessorInfoPanel professor={professor} />
+        <EmailDraftSection professor={professor} />
       </div>
+
+      {/* Floating chat overlay */}
+      <ChatSection professor={professor} />
     </div>
   );
 }

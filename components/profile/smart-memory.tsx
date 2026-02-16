@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStorage } from "@/hooks/use-storage";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getMemory, addMemory } from "@/lib/storage";
@@ -74,21 +73,19 @@ export function SmartMemory() {
           />
         </div>
 
-        <ScrollArea className="max-h-[400px]">
-          {filtered.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              {memory?.length === 0
-                ? "No memories yet. Add one above or chat with a professor to auto-generate."
-                : "No memories match your search."}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {filtered.map((item) => (
-                <MemoryItemCard key={item.id} item={item} />
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+        {filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            {memory?.length === 0
+              ? "No memories yet. Add one above or chat with a professor to auto-generate."
+              : "No memories match your search."}
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((item) => (
+              <MemoryItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
