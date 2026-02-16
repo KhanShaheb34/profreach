@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { AppShell } from "@/components/layout/app-shell";
+import { Analytics } from "@vercel/analytics/next";
 
 const plexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -24,7 +25,8 @@ const plexSerif = IBM_Plex_Serif({
 
 export const metadata: Metadata = {
   title: "Profreach — Professor Outreach Tracker",
-  description: "Track your grad school professor outreach, draft emails with AI, and manage your application pipeline.",
+  description:
+    "Track your grad school professor outreach, draft emails with AI, and manage your application pipeline.",
 };
 
 export default function RootLayout({
@@ -47,6 +49,8 @@ export default function RootLayout({
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>
+
+        <Analytics />
       </body>
     </html>
   );
