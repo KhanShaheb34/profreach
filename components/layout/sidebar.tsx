@@ -3,16 +3,37 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, GraduationCap, Menu, X } from "lucide-react";
+import { LayoutDashboard, User, Download, GraduationCap, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/export", label: "Export", icon: Download },
 ];
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  function toggle() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  }
+
+  return (
+    <Button variant="ghost" size="icon" onClick={toggle} className="h-8 w-8">
+      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
+  );
+}
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -48,35 +69,39 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile trigger */}
-      <div className="fixed top-0 left-0 z-40 flex h-14 w-full items-center border-b bg-background/95 px-4 backdrop-blur-sm md:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
-            <SheetTitle className="sr-only">Navigation</SheetTitle>
-            <div className="flex h-14 items-center gap-2 border-b px-4">
-              <GraduationCap className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Profreach</span>
-            </div>
-            <div className="py-4">
-              <NavLinks onNavigate={() => setOpen(false)} />
-            </div>
-          </SheetContent>
-        </Sheet>
-        <div className="flex items-center gap-2 ml-2">
+      <div className="fixed top-0 left-0 z-40 flex h-14 w-full items-center justify-between border-b bg-background/95 px-4 backdrop-blur-sm md:hidden">
+        <div className="flex items-center gap-2">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <SheetTitle className="sr-only">Navigation</SheetTitle>
+              <div className="flex h-14 items-center gap-2 border-b px-4">
+                <GraduationCap className="h-6 w-6 text-primary" />
+                <span className="text-lg font-bold">Profreach</span>
+              </div>
+              <div className="py-4">
+                <NavLinks onNavigate={() => setOpen(false)} />
+              </div>
+            </SheetContent>
+          </Sheet>
           <GraduationCap className="h-5 w-5 text-primary" />
           <span className="font-bold">Profreach</span>
         </div>
+        <ThemeToggle />
       </div>
 
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:border-r md:bg-background">
-        <div className="flex h-14 items-center gap-2 border-b px-6">
-          <GraduationCap className="h-6 w-6 text-primary" />
-          <span className="text-lg font-bold">Profreach</span>
+        <div className="flex h-14 items-center justify-between border-b px-6">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="h-6 w-6 text-primary" />
+            <span className="text-lg font-bold">Profreach</span>
+          </div>
+          <ThemeToggle />
         </div>
         <div className="flex-1 py-4">
           <NavLinks />
