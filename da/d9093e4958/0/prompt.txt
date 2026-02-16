@@ -1,0 +1,142 @@
+Implement the following plan:
+
+# Profreach Implementation Plan
+
+## Overview
+Build a professor outreach tracker for grad school applications using Next.js 16 (App Router), TypeScript, Tailwind CSS v4 + shadcn/ui, Gemini API, and localStorage.
+
+---
+
+## Phase 0: Setup & Dependencies
+- Install: `@google/generative-ai`, `uuid`, `@types/uuid`, `lucide-react`, `sonner`
+- Init shadcn/ui (New York style, CSS variables)
+- Add shadcn components: button, input, label, textarea, select, badge, card, dialog, dropdown-menu, tabs, separator, scroll-area, sheet, tooltip, skeleton, toast, popover, command
+- Create `.env.local` with `GEMINI_API_KEY`
+- **Commit**: `chore: install dependencies and initialize shadcn/ui`
+
+## Phase 1: Foundation (Types, Storage, Layout)
+
+### Files to create:
+- `lib/types.ts` — All interfaces (Professor, Profile, Document, MemoryItem, ChatMessage, EmailDraft, AppData) + enums (ApplicationStatus, HiringStatus, DocumentCategory, EmailTemplate)
+- `lib/constants.ts` — Status colors, default profile, sort options
+- `lib/storage.ts` — localStorage abstraction with custom event dispatch for reactivity. Collections: professors, profile, documents, memory, chats, drafts. Includes exportAll/importAll.
+- `lib/gemini.ts` — Server-side Gemini client init (standard model + grounded search model)
+- `hooks/use-storage.ts` — `useSyncExternalStore`-based hook that re-renders on storage changes
+- `hooks/use-debounce.ts` — Debounce hook for search (300ms)
+- `components/providers.tsx` — Client providers (Toaster from sonner)
+- `components/layout/sidebar.tsx` — Navigation sidebar (Dashboard, Profile, Export)
+- `components/layout/app-shell.tsx` — Sidebar + content wrapper
+- Update `app/layout.tsx` — Wrap with Providers + AppShell, update metadata
+- Update `app/globals.css` — Custom design tokens, distinctive color palette
+- **Commit**: `feat: add type definitions, storage layer, layout shell, and navigation`
+
+## Phase 2: Dashboard
+- `app/page.tsx` — Dashboard page (server wrapper)
+- `app/api/gemini/lookup/route.ts` — Professor lookup via Gemini with Google Search grounding
+- `components/dashboard/dashboard-stats.tsx` — Summary stat cards
+- `components/dashboard/add-professor-input.tsx` — Input + Gemini lookup trigger
+- `components/dashboard/add-professor-dialog.tsx` — Review/edit AI results before saving
+- `components/dashboard/filter-bar.tsx` — Search, filter (status/country/area/hiring), sort controls
+- `components/dashboard/professor-list.tsx` — Card grid, applies filters/sorting
+- `components/dashboard/professor-card.tsx` — Single card with quick status change
+- `components/dashboard/status-badge.tsx` — Colored status badge (reusable)
+- **Commit**: `feat: implement dashboard with professor list, filtering, and AI lookup`
+
+## Phase 3: Professor Detail Page
+- `app/professor/[id]/page.tsx` — Server wrapper (await params.id)
+- `app/api/gemini/email/route.ts` — Email draft generation
+- `app/api/gemini/chat/route.ts` — Professor-scoped chat (streaming)
+- `app/api/gemini/memory/route.ts` — Memory extraction from chat exchanges
+- `components/professor/professor-detail.tsx` — Main layout (info + email + chat)
+- `components/professor/professor-info-panel.tsx` — Editable professor fields
+- `components/professor/tag-input.tsx` — Reusable tag/chip input
+- `components/professor/email-draft-section.tsx` — Template selector, generate, edit, copy
+- `components/professor/chat-section.tsx` — Chat UI with auto-memory extraction
+- `components/professor/chat-message.tsx` — Message bubble
+- **Commit**: `feat: implement professor detail with info editing, email drafting, and AI chat`
+
+## Phase 4: Profile Page
+- `app/profile/page.tsx` — Server wrapper with tabs
+- `app/api/gemini/resume/route.ts` — Resume PDF parsing via Gemini
+- `components/profile/profile-form.tsx` — Personal info form (auto-saves)
+- `components/profile/resume-upload.tsx` — PDF upload + parse + apply to profile
+- `components/profile/document-manager.tsx` — Document list by category
+- `components/profile/document-upload-dialog.tsx` — Upload with category selector
+- `components/profile/smart-memory.tsx` — Memory list, search, add/edit/delete
+- `components/profile/memory-item-card.tsx` — Single memory card
+- **Commit**: `feat: implement profile page with resume parsing, documents, and smart memory`
+
+## Phase 5: Export & Polish
+- `app/export/page.tsx` — Export page
+- `components/export/export-controls.tsx` — Export JSON, import JSON, data summary
+- Dynamic imports for heavy components (ChatSection, SmartMemory, DocumentManager)
+- Loading skeletons, empty states, responsive design (sidebar collapses on mobile)
+- Dark mode support via CSS variables
+- Toast notifications for all operations
+- **Commit**: `feat: implement data export and final polish`
+
+---
+
+## Key Architecture Decisions
+1. **Storage events**: Custom DOM event on every write; `useSyncExternalStore` subscribes to it for reactivity
+2. **Server vs Client**: Pages are thin server wrappers; all data components are `'use client'` (localStorage)
+3. **AI flow**: Client collects data -> POST to `/api/gemini/*` -> Gemini call -> structured JSON response -> client writes to storage
+4. **Chat streaming**: `/api/gemini/chat` returns ReadableStream for progressive rendering
+5. **Memory extraction**: Fire-and-forget after each assistant response, subtle toast on extraction
+
+## Verification
+1. Run `pnpm dev` and verify all pages render
+2. Add a professor via the lookup input, verify Gemini returns structured data
+3. Edit professor info on detail page, verify localStorage persists
+4. Generate an email draft, verify it uses professor + profile context
+5. Chat on a professor page, verify memory extraction works
+6. Upload a resume PDF, verify parsing populates profile
+7. Upload documents, verify categorization and download
+8. Export JSON, verify all data is included
+9. Test responsive layout on mobile viewport
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shakirulhkhan/.REDACTED.jsonl
+
+---
+
+Getting this error when I open the app on browser: ## Error Type
+Console Error
+
+## Error Message
+The result of getSnapshot should be cached to avoid an infinite loop
+
+
+    at DashboardStats (components/dashboard/dashboard-stats.tsx:10:32)
+    at DashboardContent (components/dashboard/dashboard-content.tsx:17:7)
+
+## Code Frame
+   8 |
+   9 | export function DashboardStats() {
+> 10 |   const professors = useStorage(getProfessors);
+     |                                ^
+  11 |
+  12 |   if (!professors) return null;
+  13 |
+
+Next.js version: 16.1.6 (Turbopack)
+
+---
+
+Good job so far. A few adjustments:
+1. I want the chat to be a floating circle on the right bottom corner of the page, by clicking it a floating window will open on the corner to chat. Kind of like messaging inside facebook or instagram. And make the professor data full width.
+2. The smart memory box does not grow as more items are added.
+3. I want a settings page where user will be able to set an api key for gemini. Currently we take it from .env.local, but if I share the website with others, I might get bankrupt if others start using it now. So keep an api key input box along with how to get an api key from aistudio on the settings page, and instead of taking the api key from .env, take it from there, probably saving it to the localstorage. If api key is not set the whole website will have a banner on top with an input box to set the api key. Make sure the ux is good enough so that users can understand this properly.
+
+---
+
+<bash-input>pnpm dlx shadcn@latest add https://tweakcn.com/r/themes/cmlpj7uaz000204la8bw7gu80</bash-input>
+
+---
+
+<bash-stdout>[?25l[2K[1G[36m?[39m [1mYou are about to install a new style. 
+Existing CSS variables and components will be overwritten. Continue?[22m [90m›[39m [90m(y/N)[39m</bash-stdout><bash-stderr></bash-stderr>
+
+---
+
+I've added a different theme for the app, but that is not applied on the actual design. Why is that? Check @app/globals.css for the change.
