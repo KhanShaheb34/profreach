@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "9d9f60072248",
+  "session_id": "3850aa71-db24-4843-a2a4-640bd3062495",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-16T18:03:06.511335Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "idea.md"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "f154a71e-fcab-431c-89c5-500d8d25b920",
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 59583,
+    "cache_read_tokens": 116984,
+    "output_tokens": 3133,
+    "api_call_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-16T18:03:06.467249Z",
+    "agent_lines": 215,
+    "human_added": 127,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 342,
+    "agent_percentage": 62.86549707602339
+  },
+  "transcript_path": ".claude/projects/-Users-shakirulhkhan-Documents-Developer-experiments-profreach/3850aa71-db24-4843-a2a4-640bd3062495.jsonl"
+}
