@@ -1,0 +1,243 @@
+Read my idea from @idea.md properly and ask me questions to clarify it properly. We'll later work on the project but at first let both you and me clear the idea, ask as many questions as you like and then rewrite @idea.md in a proper manner.
+
+---
+
+1. For styling you'll use your /frontend-design skill. and use any tech over react/next as you like.
+2. Yes I have gemini api key ready
+3. AI should scrape/search for the info automatically
+4. Yes the one you mentioned along with email address, h-index, etc
+5. I think one draft per professor would be good
+6. Whatever you think would be best
+7. yes, you're right
+8. I think so
+9. mostly AI will extract it, but user should be able to add/edit/delete them
+10. skip it for now
+11. yes, we can use llm for this too
+12. I think there should be an option to upload them
+13. You decide
+14. nope
+15. I think everything, and json would be better I think for this
+16. no need for now
+17. build everything so far. Or if you think iterating would be better we can do that too.
+
+If you have any question, ask me. And I need one suggestion. I'm planning to save everything in database along with user auth using clerk (probably) eventually as we publish it for people. But for now I'm just building it for myself. So should we keep everything on database from the start or just use localstorage for now?
+
+---
+
+You decide on the question on how we can get information correctly. As I'm building it for myself, I'm not concerned about cost. But we might consider cost cutting when we publish it. And for searching, I think google search (gemini) would be better.
+
+---
+
+Okay now start working on it. use /vercel-react-best-practices to follow best practices for react, then /frontend-design skill to make the ui beautiful, also use /web-design-guidelines to make sure everything is perfect. If you need anymore skill use /find-skills to add it. Now start working on the project.
+
+---
+
+Base directory for this skill: /Users/shakirulhkhan/.claude/skills/vercel-react-best-practices
+
+# Vercel React Best Practices
+
+Comprehensive performance optimization guide for React and Next.js applications, maintained by Vercel. Contains 57 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
+
+## When to Apply
+
+Reference these guidelines when:
+- Writing new React components or Next.js pages
+- Implementing data fetching (client or server-side)
+- Reviewing code for performance issues
+- Refactoring existing React/Next.js code
+- Optimizing bundle size or load times
+
+## Rule Categories by Priority
+
+| Priority | Category | Impact | Prefix |
+|----------|----------|--------|--------|
+| 1 | Eliminating Waterfalls | CRITICAL | `async-` |
+| 2 | Bundle Size Optimization | CRITICAL | `bundle-` |
+| 3 | Server-Side Performance | HIGH | `server-` |
+| 4 | Client-Side Data Fetching | MEDIUM-HIGH | `client-` |
+| 5 | Re-render Optimization | MEDIUM | `rerender-` |
+| 6 | Rendering Performance | MEDIUM | `rendering-` |
+| 7 | JavaScript Performance | LOW-MEDIUM | `js-` |
+| 8 | Advanced Patterns | LOW | `advanced-` |
+
+## Quick Reference
+
+### 1. Eliminating Waterfalls (CRITICAL)
+
+- `async-defer-await` - Move await into branches where actually used
+- `async-parallel` - Use Promise.all() for independent operations
+- `async-dependencies` - Use better-all for partial dependencies
+- `async-api-routes` - Start promises early, await late in API routes
+- `async-suspense-boundaries` - Use Suspense to stream content
+
+### 2. Bundle Size Optimization (CRITICAL)
+
+- `bundle-barrel-imports` - Import directly, avoid barrel files
+- `bundle-dynamic-imports` - Use next/dynamic for heavy components
+- `bundle-defer-third-party` - Load analytics/logging after hydration
+- `bundle-conditional` - Load modules only when feature is activated
+- `bundle-preload` - Preload on hover/focus for perceived speed
+
+### 3. Server-Side Performance (HIGH)
+
+- `server-auth-actions` - Authenticate server actions like API routes
+- `server-cache-react` - Use React.cache() for per-request deduplication
+- `server-cache-lru` - Use LRU cache for cross-request caching
+- `server-dedup-props` - Avoid duplicate serialization in RSC props
+- `server-serialization` - Minimize data passed to client components
+- `server-parallel-fetching` - Restructure components to parallelize fetches
+- `server-after-nonblocking` - Use after() for non-blocking operations
+
+### 4. Client-Side Data Fetching (MEDIUM-HIGH)
+
+- `client-swr-dedup` - Use SWR for automatic request deduplication
+- `client-event-listeners` - Deduplicate global event listeners
+- `client-passive-event-listeners` - Use passive listeners for scroll
+- `client-localstorage-schema` - Version and minimize localStorage data
+
+### 5. Re-render Optimization (MEDIUM)
+
+- `rerender-defer-reads` - Don't subscribe to state only used in callbacks
+- `rerender-memo` - Extract expensive work into memoized components
+- `rerender-memo-with-default-value` - Hoist default non-primitive props
+- `rerender-dependencies` - Use primitive dependencies in effects
+- `rerender-derived-state` - Subscribe to derived booleans, not raw values
+- `rerender-derived-state-no-effect` - Derive state during render, not effects
+- `rerender-functional-setstate` - Use functional setState for stable callbacks
+- `rerender-lazy-state-init` - Pass function to useState for expensive values
+- `rerender-simple-expression-in-memo` - Avoid memo for simple primitives
+- `rerender-move-effect-to-event` - Put interaction logic in event handlers
+- `rerender-transitions` - Use startTransition for non-urgent updates
+- `rerender-use-ref-transient-values` - Use refs for transient frequent values
+
+### 6. Rendering Performance (MEDIUM)
+
+- `rendering-animate-svg-wrapper` - Animate div wrapper, not SVG element
+- `rendering-content-visibility` - Use content-visibility for long lists
+- `rendering-hoist-jsx` - Extract static JSX outside components
+- `rendering-svg-precision` - Reduce SVG coordinate precision
+- `rendering-hydration-no-flicker` - Use inline script for client-only data
+- `rendering-hydration-suppress-warning` - Suppress expected mismatches
+- `rendering-activity` - Use Activity component for show/hide
+- `rendering-conditional-render` - Use ternary, not && for conditionals
+- `rendering-usetransition-loading` - Prefer useTransition for loading state
+
+### 7. JavaScript Performance (LOW-MEDIUM)
+
+- `js-batch-dom-css` - Group CSS changes via classes or cssText
+- `js-index-maps` - Build Map for repeated lookups
+- `js-cache-property-access` - Cache object properties in loops
+- `js-cache-function-results` - Cache function results in module-level Map
+- `js-cache-storage` - Cache localStorage/sessionStorage reads
+- `js-combine-iterations` - Combine multiple filter/map into one loop
+- `js-length-check-first` - Check array length before expensive comparison
+- `js-early-exit` - Return early from functions
+- `js-hoist-regexp` - Hoist RegExp creation outside loops
+- `js-min-max-loop` - Use loop for min/max instead of sort
+- `js-set-map-lookups` - Use Set/Map for O(1) lookups
+- `js-tosorted-immutable` - Use toSorted() for immutability
+
+### 8. Advanced Patterns (LOW)
+
+- `advanced-event-handler-refs` - Store event handlers in refs
+- `advanced-init-once` - Initialize app once per app load
+- `advanced-use-latest` - useLatest for stable callback refs
+
+## How to Use
+
+Read individual rule files for detailed explanations and code examples:
+
+```
+rules/async-parallel.md
+rules/bundle-barrel-imports.md
+```
+
+Each rule file contains:
+- Brief explanation of why it matters
+- Incorrect code example with explanation
+- Correct code example with explanation
+- Additional context and references
+
+## Full Compiled Document
+
+For the complete guide with all rules expanded: `AGENTS.md`
+
+---
+
+Base directory for this skill: /Users/shakirulhkhan/.claude/skills/frontend-design
+
+This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+
+The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+
+## Design Thinking
+
+Before coding, understand the context and commit to a BOLD aesthetic direction:
+- **Purpose**: What problem does this interface solve? Who uses it?
+- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
+- **Constraints**: Technical requirements (framework, performance, accessibility).
+- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+
+**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+
+Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
+- Production-grade and functional
+- Visually striking and memorable
+- Cohesive with a clear aesthetic point-of-view
+- Meticulously refined in every detail
+
+## Frontend Aesthetics Guidelines
+
+Focus on:
+- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
+- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
+- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
+- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
+- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+
+NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+
+Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+
+**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+
+Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+---
+
+Base directory for this skill: /Users/shakirulhkhan/.claude/skills/web-design-guidelines
+
+# Web Interface Guidelines
+
+Review files for compliance with Web Interface Guidelines.
+
+## How It Works
+
+1. Fetch the latest guidelines from the source URL below
+2. Read the specified files (or prompt user for files/pattern)
+3. Check against all rules in the fetched guidelines
+4. Output findings in the terse `file:line` format
+
+## Guidelines Source
+
+Fetch fresh guidelines before each review:
+
+```
+https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md
+```
+
+Use WebFetch to retrieve the latest rules. The fetched content contains all the rules and output format instructions.
+
+## Usage
+
+When a user provides a file or pattern argument:
+1. Fetch guidelines from the source URL above
+2. Read the specified files
+3. Apply all rules from the fetched guidelines
+4. Output findings using the format specified in the guidelines
+
+If no files specified, ask the user which files to review.
+
+---
+
+[Request interrupted by user for tool use]
