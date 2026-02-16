@@ -3,9 +3,13 @@ import { getModel } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userMessage, assistantMessage, professorName } = await req.json();
+    const { userMessage, assistantMessage, professorName, apiKey } = await req.json();
 
-    const model = getModel();
+    if (!apiKey) {
+      return NextResponse.json({ memories: [] });
+    }
+
+    const model = getModel(apiKey);
 
     const prompt = `Analyze this conversation exchange between a grad school applicant and an AI advisor about Professor ${professorName}.
 

@@ -9,6 +9,7 @@ const KEYS = {
   memory: "profreach:memory",
   chats: "profreach:chats",
   drafts: "profreach:drafts",
+  apiKey: "profreach:gemini-api-key",
 } as const;
 
 function emit(key: string) {
@@ -161,6 +162,15 @@ export function addDraft(draft: EmailDraft) {
 
 export function deleteDraft(id: string) {
   setDrafts(getDrafts().filter((d) => d.id !== id));
+}
+
+// API Key
+export function getApiKey(): string {
+  return get(KEYS.apiKey, "");
+}
+
+export function setApiKey(key: string) {
+  set(KEYS.apiKey, key);
 }
 
 // Export / Import

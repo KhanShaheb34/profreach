@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getProfile, getMemory, addDraft, getDraftsByProfessor, deleteDraft } from "@/lib/storage";
+import { getProfile, getMemory, getApiKey, addDraft, getDraftsByProfessor, deleteDraft } from "@/lib/storage";
 import { useStorage } from "@/hooks/use-storage";
 import { EmailTemplate } from "@/lib/types";
 import { EMAIL_TEMPLATE_LABELS } from "@/lib/constants";
@@ -45,7 +45,7 @@ export function EmailDraftSection({ professor }: { professor: Professor }) {
       const res = await fetch("/api/gemini/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ professor, profile, template, memory }),
+        body: JSON.stringify({ professor, profile, template, memory, apiKey: getApiKey() }),
       });
 
       if (!res.ok) throw new Error("Generation failed");

@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { setProfile, getProfile } from "@/lib/storage";
+import { setProfile, getProfile, getApiKey } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
 import { Upload, Loader2, FileText } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export function ResumeUpload() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("apiKey", getApiKey());
 
       const res = await fetch("/api/gemini/resume", {
         method: "POST",

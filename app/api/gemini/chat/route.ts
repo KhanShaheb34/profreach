@@ -3,9 +3,16 @@ import { getModel } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, professor, profile, memory, history } = await req.json();
+    const { message, professor, profile, memory, history, apiKey } = await req.json();
 
-    const model = getModel();
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: "API key is required. Set it in Settings." }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const model = getModel(apiKey);
 
     const systemContext = `You are an AI research advisor helping a graduate school applicant prepare to contact and work with professors.
 

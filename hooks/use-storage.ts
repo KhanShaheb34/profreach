@@ -1,19 +1,24 @@
 "use client";
 
-import { useSyncExternalStore, useCallback } from "react";
+import { useSyncExternalStore, useCallback, useRef } from "react";
 import { subscribe } from "@/lib/storage";
 
 export function useStorage<T>(getter: () => T): T {
+  const cacheRef = useRef<{ json: string; value: T } | null>(null);
+
   const getSnapshot = useCallback(() => {
-    try {
-      return getter();
-    } catch {
-      return getter();
+    const value = getter();
+    const json = JSON.stringify(value);
+
+    if (cacheRef.current && cacheRef.current.json === json) {
+      return cacheRef.current.value;
     }
+
+    cacheRef.current = { json, value };
+    return value;
   }, [getter]);
 
   const getServerSnapshot = useCallback((): T => {
-    // Return a stable default for SSR — the actual value hydrates on client
     return undefined as unknown as T;
   }, []);
 

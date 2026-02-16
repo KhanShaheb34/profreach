@@ -3,9 +3,13 @@ import { getModel } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
-    const { professor, profile, template, memory } = await req.json();
+    const { professor, profile, template, memory, apiKey } = await req.json();
 
-    const model = getModel();
+    if (!apiKey) {
+      return NextResponse.json({ error: "API key is required. Set it in Settings." }, { status: 401 });
+    }
+
+    const model = getModel(apiKey);
 
     const prompt = `You are helping a graduate school applicant draft an email to a professor.
 

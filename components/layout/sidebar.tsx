@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, GraduationCap, Menu, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/export", label: "Export", icon: Download },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 function ThemeToggle() {

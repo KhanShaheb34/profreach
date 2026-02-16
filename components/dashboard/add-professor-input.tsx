@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Sparkles, Loader2 } from "lucide-react";
 import { AddProfessorDialog } from "./add-professor-dialog";
 import type { Professor } from "@/lib/types";
+import { getApiKey } from "@/lib/storage";
 import { toast } from "sonner";
 
 export function AddProfessorInput() {
@@ -26,7 +27,7 @@ export function AddProfessorInput() {
       const res = await fetch("/api/gemini/lookup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: query.trim() }),
+        body: JSON.stringify({ query: query.trim(), apiKey: getApiKey() }),
       });
 
       if (!res.ok) {

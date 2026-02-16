@@ -3,13 +3,17 @@ import { getGroundedModel } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
-    const { query } = await req.json();
+    const { query, apiKey } = await req.json();
+
+    if (!apiKey) {
+      return NextResponse.json({ error: "API key is required. Set it in Settings." }, { status: 401 });
+    }
 
     if (!query || typeof query !== "string") {
       return NextResponse.json({ error: "Query is required" }, { status: 400 });
     }
 
-    const model = getGroundedModel();
+    const model = getGroundedModel(apiKey);
 
     const prompt = `You are a research assistant helping find information about a professor for graduate school applications.
 
@@ -35,7 +39,6 @@ Return ONLY the JSON object, no markdown formatting, no code blocks, no addition
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    // Extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: "Could not parse AI response" }, { status: 500 });

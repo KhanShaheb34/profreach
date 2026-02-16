@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "./chat-message";
-import { addChat, getChatsByProfessor, getProfile, getMemory, addMemory } from "@/lib/storage";
+import { addChat, getChatsByProfessor, getProfile, getMemory, getApiKey, addMemory } from "@/lib/storage";
 import { useStorage } from "@/hooks/use-storage";
 import type { Professor, ChatMessage as ChatMessageType } from "@/lib/types";
 import { Send, Loader2, MessageSquare } from "lucide-react";
@@ -37,6 +37,7 @@ export function ChatSection({ professor }: { professor: Professor }) {
           userMessage: userMsg,
           assistantMessage: assistantMsg,
           professorName: professor.name,
+          apiKey: getApiKey(),
         }),
       });
       const data = await res.json();
@@ -95,6 +96,7 @@ export function ChatSection({ professor }: { professor: Professor }) {
           profile,
           memory,
           history,
+          apiKey: getApiKey(),
         }),
       });
 

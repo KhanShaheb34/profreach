@@ -5,6 +5,11 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const apiKey = formData.get("apiKey") as string | null;
+
+    if (!apiKey) {
+      return NextResponse.json({ error: "API key is required. Set it in Settings." }, { status: 401 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -13,7 +18,7 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
 
-    const model = getModel();
+    const model = getModel(apiKey);
 
     const result = await model.generateContent([
       {
