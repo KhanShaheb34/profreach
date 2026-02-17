@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TagInput } from "./tag-input";
-import { StatusBadge } from "@/components/dashboard/status-badge";
 import { updateProfessor } from "@/lib/storage";
 import { ApplicationStatus, HiringStatus } from "@/lib/types";
 import { STATUS_LABELS, HIRING_STATUS_LABELS } from "@/lib/constants";
