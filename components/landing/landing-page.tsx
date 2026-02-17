@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { setIsAuthenticated } from "@/lib/storage";
 import { ArrowRight, FlaskConical, LineChart, MessageSquareText, Sparkles } from "lucide-react";
 
 const highlights = [
@@ -36,7 +37,7 @@ export function LandingPage() {
             Profreach
           </div>
           <span className="rounded-full border border-[#cda77f] bg-white/70 px-3 py-1 text-xs font-medium text-[#7b5333] backdrop-blur-sm">
-            Mock Auth Mode
+            Clerk Auth Enabled
           </span>
         </header>
 
@@ -55,17 +56,39 @@ export function LandingPage() {
             </p>
 
             <div className="landing-fade-up landing-delay-4 flex flex-wrap items-center gap-3">
-              <Button
-                size="lg"
-                className="h-11 rounded-full bg-[#7a3f1f] px-6 text-white shadow-[0_8px_24px_rgba(122,63,31,0.28)] transition hover:bg-[#663418]"
-                onClick={() => setIsAuthenticated(true)}
-              >
-                Mock Sign In
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-              <span className="text-sm text-[#70492d]">
-                Clerk will replace this flow later.
-              </span>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button
+                    size="lg"
+                    className="h-11 rounded-full bg-[#7a3f1f] px-6 text-white shadow-[0_8px_24px_rgba(122,63,31,0.28)] transition hover:bg-[#663418]"
+                  >
+                    Sign In
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-11 rounded-full border-[#ad7b55] bg-white/80 px-6 text-[#63381f]"
+                  >
+                    Create Account
+                  </Button>
+                </SignUpButton>
+              </SignedOut>
+
+              <SignedIn>
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-11 rounded-full bg-[#7a3f1f] px-6 text-white shadow-[0_8px_24px_rgba(122,63,31,0.28)] transition hover:bg-[#663418]"
+                >
+                  <Link href="/dashboard">
+                    Go to Dashboard
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </SignedIn>
             </div>
           </section>
 

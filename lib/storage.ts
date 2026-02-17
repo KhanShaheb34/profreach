@@ -28,7 +28,6 @@ const KEYS = {
   chats: "profreach:chats",
   drafts: "profreach:drafts",
   apiKey: "profreach:gemini-api-key",
-  auth: "profreach:auth",
 } as const;
 
 const VALID_IMPORT_KEYS = [
@@ -426,15 +425,6 @@ export function getApiKey(): string {
 
 export function setApiKey(key: string) {
   set(KEYS.apiKey, key);
-}
-
-// Mock Auth (for pre-Clerk integration)
-export function getIsAuthenticated(): boolean {
-  return get(KEYS.auth, false);
-}
-
-export function setIsAuthenticated(value: boolean) {
-  set(KEYS.auth, value);
 }
 
 // Export / Import

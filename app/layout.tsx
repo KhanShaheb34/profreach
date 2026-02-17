@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -35,23 +36,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.theme==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}`,
-          }}
-        />
-      </head>
-      <body
-        className={`${plexSans.variable} ${plexMono.variable} ${plexSerif.variable} font-sans antialiased`}
-      >
-        <Providers>
-          <AppShell>{children}</AppShell>
-        </Providers>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `try{if(localStorage.theme==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}`,
+            }}
+          />
+        </head>
+        <body
+          className={`${plexSans.variable} ${plexMono.variable} ${plexSerif.variable} font-sans antialiased`}
+        >
+          <Providers>
+            <AppShell>{children}</AppShell>
+          </Providers>
 
-        <Analytics />
-      </body>
-    </html>
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

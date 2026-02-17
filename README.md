@@ -21,8 +21,22 @@ Built with Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, and Google Gemini
 
 ## Getting Started
 
+1. Install dependencies:
+
 ```bash
 pnpm install
+```
+
+2. Configure Clerk keys in `.env.local`:
+
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
+CLERK_SECRET_KEY=YOUR_SECRET_KEY
+```
+
+3. Run the app:
+
+```bash
 pnpm dev
 ```
 
@@ -51,12 +65,14 @@ Your key is stored in your browser's localStorage and sent with each AI request 
 
 ```text
 app/
-  page.tsx                    # Dashboard
+  page.tsx                    # Public landing page (redirects signed-in users to /dashboard)
+  dashboard/page.tsx          # Authenticated dashboard
   professor/[id]/page.tsx     # Professor detail
   profile/page.tsx            # Profile + documents + memory
   settings/page.tsx           # API key configuration
   export/page.tsx             # Data export/import
   api/gemini/                 # API routes (lookup, email, chat, memory, resume)
+proxy.ts                      # Clerk middleware and route protection
 components/
   dashboard/                  # Stats, professor list, cards, filters, add dialog
   professor/                  # Info panel, email drafts, floating chat, tag input

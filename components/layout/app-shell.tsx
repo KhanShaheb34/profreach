@@ -1,35 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { ApiKeyBanner } from "./api-key-banner";
-import { useMockAuth } from "@/hooks/use-mock-auth";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { isAuthenticated, isReady } = useMockAuth();
-  const isLandingRoute = pathname === "/";
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/sign-in") ||
+    pathname.startsWith("/sign-up");
 
-  useEffect(() => {
-    if (isReady && !isAuthenticated && !isLandingRoute) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, isLandingRoute, isReady, router]);
-
-  if (!isReady) {
-    if (isLandingRoute) {
-      return <main>{children}</main>;
-    }
-    return null;
-  }
-
-  if (!isAuthenticated) {
-    if (!isLandingRoute) {
-      return null;
-    }
-
+  if (isPublicRoute) {
     return <main>{children}</main>;
   }
 

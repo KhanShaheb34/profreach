@@ -29,7 +29,7 @@ export function ProfessorDetail({ id }: { id: string }) {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <h2 className="text-lg font-medium">Professor not found</h2>
         <p className="text-sm text-muted-foreground mt-1">This professor may have been deleted.</p>
-        <Link href="/">
+        <Link href="/dashboard">
           <Button variant="outline" className="mt-4">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Dashboard
@@ -42,7 +42,7 @@ export function ProfessorDetail({ id }: { id: string }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/">
+        <Link href="/dashboard">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>

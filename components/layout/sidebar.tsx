@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun, LogOut } from "lucide-react";
+import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
-import { setIsAuthenticated } from "@/lib/storage";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/export", label: "Export", icon: Download },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -42,7 +42,10 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="flex flex-col gap-1 px-3">
       {NAV_ITEMS.map((item) => {
-        const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const isActive = item.href === "/dashboard"
+          ? pathname === "/dashboard"
+          : pathname.startsWith(item.href);
+
         return (
           <Link
             key={item.href}
@@ -66,13 +69,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-
-  function handleLogout() {
-    setIsAuthenticated(false);
-    router.replace("/");
-    setOpen(false);
-  }
 
   return (
     <>
@@ -95,10 +91,7 @@ export function Sidebar() {
                 <NavLinks onNavigate={() => setOpen(false)} />
               </div>
               <div className="border-t p-3">
-                <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                  Log Out
-                </Button>
+                <UserButton />
               </div>
             </SheetContent>
           </Sheet>
@@ -121,10 +114,7 @@ export function Sidebar() {
           <NavLinks />
         </div>
         <div className="border-t p-3">
-          <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
-            <LogOut className="h-4 w-4" />
-            Log Out
-          </Button>
+          <UserButton />
         </div>
       </aside>
     </>
