@@ -97,16 +97,29 @@ export const memoryRequestSchema = z.object({
 
 export const memoryResponseSchema = z.array(z.string().trim()).default([]);
 
+const resumeStringField = z.preprocess(
+  (value) => (value == null ? "" : value),
+  z.string(),
+).catch("").default("");
+
+const resumeStringArrayField = z.preprocess(
+  (value) =>
+    Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === "string")
+      : [],
+  z.array(z.string()),
+).default([]);
+
 export const resumeResponseSchema = z.object({
-  name: z.string().default(""),
-  email: z.string().default(""),
-  university: z.string().default(""),
-  degree: z.string().default(""),
-  field: z.string().default(""),
-  gpa: z.string().default(""),
-  researchInterests: z.array(z.string()).default([]),
-  skills: z.array(z.string()).default([]),
-  publications: z.array(z.string()).default([]),
-  workExperience: z.string().default(""),
-  summary: z.string().default(""),
+  name: resumeStringField,
+  email: resumeStringField,
+  university: resumeStringField,
+  degree: resumeStringField,
+  field: resumeStringField,
+  gpa: resumeStringField,
+  researchInterests: resumeStringArrayField,
+  skills: resumeStringArrayField,
+  publications: resumeStringArrayField,
+  workExperience: resumeStringField,
+  summary: resumeStringField,
 });
