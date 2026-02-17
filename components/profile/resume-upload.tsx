@@ -2,9 +2,9 @@
 
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { setProfile, getProfile, getApiKey } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
+import { MAX_RESUME_SIZE_BYTES } from "@/lib/constants";
 import { Upload, Loader2, FileText } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,6 +13,11 @@ export function ResumeUpload() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(file: File) {
+    if (file.size > MAX_RESUME_SIZE_BYTES) {
+      toast.error("Resume is too large. Maximum size is 10 MB.");
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();

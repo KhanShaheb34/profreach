@@ -12,6 +12,12 @@ import {
   type AppData,
 } from "./types";
 import { DEFAULT_PROFILE } from "./constants";
+import {
+  addDocumentToDb,
+  deleteDocumentFromDb,
+  getAllDocumentsFromDb,
+  saveAllDocumentsToDb,
+} from "./document-db";
 
 const STORAGE_EVENT = "profreach-storage-change";
 const KEYS = {
@@ -36,6 +42,7 @@ const APPLICATION_STATUS_VALUES = Object.values(ApplicationStatus);
 const HIRING_STATUS_VALUES = Object.values(HiringStatus);
 const DOCUMENT_CATEGORY_VALUES = Object.values(DocumentCategory);
 const EMAIL_TEMPLATE_VALUES = Object.values(EmailTemplate);
+let documentsMigrationPromise: Promise<void> | null = null;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -258,6 +265,21 @@ function set<T>(key: string, value: T) {
   emit(key);
 }
 
+async function migrateLegacyDocumentsIfNeeded(): Promise<void> {
+  if (typeof window === "undefined") return;
+  if (documentsMigrationPromise) return documentsMigrationPromise;
+
+  documentsMigrationPromise = (async () => {
+    const legacyDocuments = get<Document[]>(KEYS.documents, []);
+    if (legacyDocuments.length > 0) {
+      await saveAllDocumentsToDb(legacyDocuments);
+    }
+    localStorage.removeItem(KEYS.documents);
+  })();
+
+  await documentsMigrationPromise;
+}
+
 // Professors
 export function getProfessors(): Professor[] {
   return get(KEYS.professors, []);
@@ -302,23 +324,28 @@ export function setProfile(profile: Profile) {
   set(KEYS.profile, profile);
 }
 
-// Documents
-export function getDocuments(): Document[] {
-  return get(KEYS.documents, []);
+// Documents (IndexedDB)
+export async function getDocuments(): Promise<Document[]> {
+  await migrateLegacyDocumentsIfNeeded();
+  return getAllDocumentsFromDb();
 }
 
-export function setDocuments(documents: Document[]) {
-  set(KEYS.documents, documents);
+export async function setDocuments(documents: Document[]) {
+  await migrateLegacyDocumentsIfNeeded();
+  await saveAllDocumentsToDb(documents);
+  emit(KEYS.documents);
 }
 
-export function addDocument(doc: Document) {
-  const all = getDocuments();
-  all.push(doc);
-  setDocuments(all);
+export async function addDocument(doc: Document) {
+  await migrateLegacyDocumentsIfNeeded();
+  await addDocumentToDb(doc);
+  emit(KEYS.documents);
 }
 
-export function deleteDocument(id: string) {
-  setDocuments(getDocuments().filter((d) => d.id !== id));
+export async function deleteDocument(id: string) {
+  await migrateLegacyDocumentsIfNeeded();
+  await deleteDocumentFromDb(id);
+  emit(KEYS.documents);
 }
 
 // Memory
@@ -401,22 +428,23 @@ export function setApiKey(key: string) {
 }
 
 // Export / Import
-export function exportAll(): AppData {
+export async function exportAll(): Promise<AppData> {
+  const documents = await getDocuments();
   return {
     professors: getProfessors(),
     profile: getProfile(),
-    documents: getDocuments(),
+    documents,
     memory: getMemory(),
     chats: getChats(),
     drafts: getDrafts(),
   };
 }
 
-export function importAll(data: unknown) {
+export async function importAll(data: unknown) {
   const sanitized = sanitizeImportData(data);
   setProfessors(sanitized.professors);
   setProfile(sanitized.profile);
-  setDocuments(sanitized.documents);
+  await setDocuments(sanitized.documents);
   setMemory(sanitized.memory);
   setChats(sanitized.chats);
   setDrafts(sanitized.drafts);

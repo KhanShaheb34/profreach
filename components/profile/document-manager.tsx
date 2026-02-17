@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useStorage } from "@/hooks/use-storage";
-import { getDocuments, deleteDocument } from "@/lib/storage";
+import { useDocuments } from "@/hooks/use-documents";
+import { deleteDocument } from "@/lib/storage";
 import { DOCUMENT_CATEGORY_LABELS } from "@/lib/constants";
 import { DocumentUploadDialog } from "./document-upload-dialog";
 import { Plus, Trash2, FileText, Download } from "lucide-react";
 import { toast } from "sonner";
 
 export function DocumentManager() {
-  const documents = useStorage(getDocuments);
+  const { documents, loading } = useDocuments();
   const [uploadOpen, setUploadOpen] = useState(false);
 
   function handleDownload(doc: { name: string; content: string; mimeType: string }) {
@@ -21,9 +21,13 @@ export function DocumentManager() {
     link.click();
   }
 
-  function handleDelete(id: string, name: string) {
-    deleteDocument(id);
-    toast.success(`Deleted ${name}`);
+  async function handleDelete(id: string, name: string) {
+    try {
+      await deleteDocument(id);
+      toast.success(`Deleted ${name}`);
+    } catch {
+      toast.error("Failed to delete document");
+    }
   }
 
   return (
@@ -39,7 +43,11 @@ export function DocumentManager() {
         </Button>
       </CardHeader>
       <CardContent>
-        {!documents || documents.length === 0 ? (
+        {loading ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            Loading documents...
+          </p>
+        ) : documents.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
             No documents uploaded yet.
           </p>

@@ -70,3 +70,6 @@ export const SORT_OPTIONS = [
   { value: "name-desc", label: "Name (Z-A)" },
   { value: "university-asc", label: "University (A-Z)" },
 ] as const;
+
+export const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+export const MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB

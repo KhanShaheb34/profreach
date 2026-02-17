@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/select";
 import { addDocument } from "@/lib/storage";
 import { DocumentCategory } from "@/lib/types";
-import { DOCUMENT_CATEGORY_LABELS } from "@/lib/constants";
-import { Upload } from "lucide-react";
+import { DOCUMENT_CATEGORY_LABELS, MAX_DOCUMENT_SIZE_BYTES } from "@/lib/constants";
+import { Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface DocumentUploadDialogProps {
@@ -32,6 +32,7 @@ interface DocumentUploadDialogProps {
 export function DocumentUploadDialog({ open, onOpenChange }: DocumentUploadDialogProps) {
   const [category, setCategory] = useState<DocumentCategory>(DocumentCategory.Other);
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload() {
@@ -40,26 +41,43 @@ export function DocumentUploadDialog({ open, onOpenChange }: DocumentUploadDialo
       return;
     }
 
+    if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
+      toast.error("File is too large. Maximum size is 10 MB.");
+      return;
+    }
+
+    setUploading(true);
     try {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const content = reader.result as string;
-        addDocument({
-          id: uuidv4(),
-          name: file.name,
-          category,
-          content,
-          mimeType: file.type,
-          size: file.size,
-          createdAt: new Date().toISOString(),
-        });
-        toast.success(`Uploaded ${file.name}`);
-        onOpenChange(false);
-        setFile(null);
+        try {
+          await addDocument({
+            id: uuidv4(),
+            name: file.name,
+            category,
+            content,
+            mimeType: file.type,
+            size: file.size,
+            createdAt: new Date().toISOString(),
+          });
+          toast.success(`Uploaded ${file.name}`);
+          onOpenChange(false);
+          setFile(null);
+        } catch {
+          toast.error("Failed to store document");
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+        setUploading(false);
       };
       reader.readAsDataURL(file);
     } catch {
       toast.error("Failed to upload document");
+      setUploading(false);
     }
   }
 
@@ -93,7 +111,15 @@ export function DocumentUploadDialog({ open, onOpenChange }: DocumentUploadDialo
               ref={inputRef}
               type="file"
               className="hidden"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                const nextFile = e.target.files?.[0] ?? null;
+                if (nextFile && nextFile.size > MAX_DOCUMENT_SIZE_BYTES) {
+                  toast.error("File is too large. Maximum size is 10 MB.");
+                  setFile(null);
+                  return;
+                }
+                setFile(nextFile);
+              }}
             />
             <div
               className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
@@ -111,8 +137,8 @@ export function DocumentUploadDialog({ open, onOpenChange }: DocumentUploadDialo
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleUpload} disabled={!file}>
-            Upload
+          <Button onClick={handleUpload} disabled={!file || uploading}>
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Upload"}
           </Button>
         </DialogFooter>
       </DialogContent>

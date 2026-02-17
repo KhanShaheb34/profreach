@@ -5,20 +5,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useStorage } from "@/hooks/use-storage";
-import { exportAll, importAll, getProfessors, getDocuments, getMemory, getChats, getDrafts } from "@/lib/storage";
+import { useDocuments } from "@/hooks/use-documents";
+import { exportAll, importAll, getProfessors, getMemory, getChats, getDrafts } from "@/lib/storage";
 import { Download, Upload, Database, Users, FileText, Brain, MessageSquare, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 export function ExportControls() {
   const professors = useStorage(getProfessors);
-  const documents = useStorage(getDocuments);
+  const { documents } = useDocuments();
   const memory = useStorage(getMemory);
   const chats = useStorage(getChats);
   const drafts = useStorage(getDrafts);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleExport() {
-    const data = exportAll();
+  async function handleExport() {
+    const data = await exportAll();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -31,10 +32,10 @@ export function ExportControls() {
 
   function handleImport(file: File) {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
         const data = JSON.parse(reader.result as string);
-        importAll(data);
+        await importAll(data);
         toast.success("Data imported successfully");
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Invalid backup file");
