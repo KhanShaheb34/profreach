@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, Settings, Menu, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, User, Download, Settings, Menu, Moon, Sun, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -98,7 +98,19 @@ export function Sidebar() {
                 <NavLinks onNavigate={() => setOpen(false)} />
               </div>
               <div className="border-t p-3">
-                <UserButton />
+                <div className="flex items-center justify-between gap-3">
+                  <a
+                    href="https://github.com/KhanShaheb34/profreach"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open GitHub repository"
+                  >
+                    <Button variant="outline" size="icon" className="h-9 w-9">
+                      <Github className="h-4 w-4" />
+                    </Button>
+                  </a>
+                  <UserButton />
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -133,7 +145,19 @@ export function Sidebar() {
           <NavLinks />
         </div>
         <div className="border-t p-3">
-          <UserButton />
+          <div className="flex items-center justify-between gap-3">
+            <a
+              href="https://github.com/KhanShaheb34/profreach"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open GitHub repository"
+            >
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <Github className="h-4 w-4" />
+              </Button>
+            </a>
+            <UserButton />
+          </div>
         </div>
       </aside>
     </>
