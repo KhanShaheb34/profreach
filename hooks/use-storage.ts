@@ -19,8 +19,10 @@ export function useStorage<T>(getter: () => T): T {
   }, [getter]);
 
   const getServerSnapshot = useCallback((): T => {
-    return undefined as unknown as T;
-  }, []);
+    // Resolve to storage getter fallback values during server render
+    // (e.g. empty arrays/default profile), preventing undefined snapshots.
+    return getter();
+  }, [getter]);
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
