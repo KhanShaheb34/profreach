@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGroundedModel } from "@/lib/gemini";
+import { lookupRequestSchema, lookupResponseSchema } from "@/lib/api-schemas";
+import { parseAiJsonObject } from "@/lib/ai-json";
 
 export async function POST(req: NextRequest) {
   try {
-    const { query, apiKey } = await req.json();
-
-    if (!apiKey) {
-      return NextResponse.json({ error: "API key is required. Set it in Settings." }, { status: 401 });
+    const parsedRequest = lookupRequestSchema.safeParse(await req.json());
+    if (!parsedRequest.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid request payload",
+          details: parsedRequest.error.issues.map((issue) => issue.message),
+        },
+        { status: 400 },
+      );
     }
-
-    if (!query || typeof query !== "string") {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 });
-    }
+    const { query, apiKey } = parsedRequest.data;
 
     const model = getGroundedModel(apiKey);
 
@@ -34,18 +38,12 @@ Return ONLY a valid JSON object with the following fields (use empty string or e
   "notes": "Brief summary of their research focus"
 }
 
-Return ONLY the JSON object, no markdown formatting, no code blocks, no additional text.`;
+    Return ONLY the JSON object, no markdown formatting, no code blocks, no additional text.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json({ error: "Could not parse AI response" }, { status: 500 });
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    return NextResponse.json(parsed);
+    const parsedResponse = parseAiJsonObject(text, lookupResponseSchema);
+    return NextResponse.json(parsedResponse);
   } catch (error) {
     console.error("Lookup error:", error);
     return NextResponse.json(

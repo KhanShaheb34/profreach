@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModel } from "@/lib/gemini";
+import { emailRequestSchema, emailResponseSchema } from "@/lib/api-schemas";
+import { parseAiJsonObject } from "@/lib/ai-json";
 
 export async function POST(req: NextRequest) {
   try {
-    const { professor, profile, template, memory, apiKey } = await req.json();
-
-    if (!apiKey) {
-      return NextResponse.json({ error: "API key is required. Set it in Settings." }, { status: 401 });
+    const parsedRequest = emailRequestSchema.safeParse(await req.json());
+    if (!parsedRequest.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid request payload",
+          details: parsedRequest.error.issues.map((issue) => issue.message),
+        },
+        { status: 400 },
+      );
     }
+    const { professor, profile, template, memory, apiKey } = parsedRequest.data;
 
     const model = getModel(apiKey);
 
@@ -31,7 +39,7 @@ export async function POST(req: NextRequest) {
 - Recent Papers: ${professor.recentPapers?.join("; ") || "Not provided"}
 
 ## Relevant Context/Memory
-${memory?.length ? memory.map((m: { content: string }) => `- ${m.content}`).join("\n") : "No additional context"}
+${memory.length ? memory.map((m) => `- ${m.content}`).join("\n") : "No additional context"}
 
 ## Email Template Type: ${template}
 
@@ -47,18 +55,12 @@ Return ONLY a JSON object:
   "body": "Full email body text"
 }
 
-Return ONLY the JSON object, no markdown formatting.`;
+    Return ONLY the JSON object, no markdown formatting.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json({ error: "Could not parse AI response" }, { status: 500 });
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    return NextResponse.json(parsed);
+    const parsedResponse = parseAiJsonObject(text, emailResponseSchema);
+    return NextResponse.json(parsedResponse);
   } catch (error) {
     console.error("Email generation error:", error);
     return NextResponse.json(

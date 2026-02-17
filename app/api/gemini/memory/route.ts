@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModel } from "@/lib/gemini";
+import { memoryRequestSchema, memoryResponseSchema } from "@/lib/api-schemas";
+import { parseAiJsonArray } from "@/lib/ai-json";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userMessage, assistantMessage, professorName, apiKey } = await req.json();
+    const parsedRequest = memoryRequestSchema.safeParse(await req.json());
+    if (!parsedRequest.success) {
+      return NextResponse.json({ memories: [] });
+    }
+    const { userMessage, assistantMessage, professorName, apiKey } = parsedRequest.data;
 
     if (!apiKey) {
       return NextResponse.json({ memories: [] });
@@ -27,17 +33,11 @@ If there's nothing worth remembering, return an empty array.
 Return ONLY a JSON array of strings, each being a concise memory item:
 ["memory item 1", "memory item 2"]
 
-Return ONLY the JSON array, no markdown formatting.`;
+    Return ONLY the JSON array, no markdown formatting.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      return NextResponse.json({ memories: [] });
-    }
-
-    const memories: string[] = JSON.parse(jsonMatch[0]);
+    const memories = parseAiJsonArray(text, memoryResponseSchema);
     return NextResponse.json({ memories: memories.filter((m) => m.trim()) });
   } catch (error) {
     console.error("Memory extraction error:", error);

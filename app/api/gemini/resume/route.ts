@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModel } from "@/lib/gemini";
+import { resumeResponseSchema } from "@/lib/api-schemas";
+import { parseAiJsonObject } from "@/lib/ai-json";
+import { MAX_RESUME_SIZE_BYTES } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +16,14 @@ export async function POST(req: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (file.size > MAX_RESUME_SIZE_BYTES) {
+      return NextResponse.json({ error: "Resume is too large. Maximum size is 10 MB." }, { status: 400 });
+    }
+
+    if (file.type && file.type !== "application/pdf") {
+      return NextResponse.json({ error: "Only PDF files are supported for resume parsing." }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -48,12 +59,7 @@ Return ONLY the JSON object, no markdown formatting.`,
     ]);
 
     const text = result.response.text();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json({ error: "Could not parse resume" }, { status: 500 });
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseAiJsonObject(text, resumeResponseSchema);
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("Resume parse error:", error);

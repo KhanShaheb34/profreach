@@ -1,16 +1,20 @@
 import { NextRequest } from "next/server";
 import { getModel } from "@/lib/gemini";
+import { chatRequestSchema } from "@/lib/api-schemas";
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, professor, profile, memory, history, apiKey } = await req.json();
-
-    if (!apiKey) {
+    const parsed = chatRequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
       return new Response(
-        JSON.stringify({ error: "API key is required. Set it in Settings." }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "Invalid request payload",
+          details: parsed.error.issues.map((issue) => issue.message),
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
       );
     }
+    const { message, professor, profile, memory, history, apiKey } = parsed.data;
 
     const model = getModel(apiKey);
 
@@ -31,11 +35,11 @@ export async function POST(req: NextRequest) {
 - Summary: ${profile.summary || "Not provided"}
 
 ## Relevant Memory/Context
-${memory?.length ? memory.map((m: { content: string }) => `- ${m.content}`).join("\n") : "No additional context"}
+${memory.length ? memory.map((m) => `- ${m.content}`).join("\n") : "No additional context"}
 
 Help the applicant with questions about this professor, their research, how to approach them, what to discuss, etc. Be specific and actionable.`;
 
-    const chatHistory = (history || []).map((msg: { role: string; content: string }) => ({
+    const chatHistory = history.map((msg) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }],
     }));
@@ -43,7 +47,14 @@ Help the applicant with questions about this professor, their research, how to a
     const chat = model.startChat({
       history: [
         { role: "user", parts: [{ text: "System context: " + systemContext }] },
-        { role: "model", parts: [{ text: "I understand. I'm ready to help you with your professor outreach. What would you like to know?" }] },
+        {
+          role: "model",
+          parts: [
+            {
+              text: "I understand. I'm ready to help you with your professor outreach. What would you like to know?",
+            },
+          ],
+        },
         ...chatHistory,
       ],
     });
