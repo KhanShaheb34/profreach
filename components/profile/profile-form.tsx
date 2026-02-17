@@ -17,13 +17,16 @@ export function ProfileForm() {
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const pendingDraftRef = useRef<Partial<Profile>>({});
   const latestProfileRef = useRef(profile);
-  latestProfileRef.current = profile;
 
   const form: Profile = { ...profile, ...draft };
 
   useEffect(() => {
     return () => clearTimeout(saveTimer.current);
   }, []);
+
+  useEffect(() => {
+    latestProfileRef.current = profile;
+  }, [profile]);
 
   function handleChange(updates: Partial<Profile>) {
     pendingDraftRef.current = { ...pendingDraftRef.current, ...updates };

@@ -17,7 +17,7 @@ Built with Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, and Google Gemini
 - **Document Manager** — Upload and categorize documents (resume, SOP, transcripts, writing samples)
 - **Data Export/Import** — Full JSON backup and restore of all your data
 - **Dark Mode** — System preference detection + manual toggle
-- **Client-Side Storage** — All data lives in localStorage; nothing is sent to any server except Gemini API calls
+- **Client-Side Storage** — Core app data is stored in localStorage, uploaded documents are stored in IndexedDB, and API keys stay in your browser storage
 
 ## Getting Started
 
@@ -36,7 +36,7 @@ AI features require a Google Gemini API key. You can get one for free:
 2. Sign in and click "Create API Key"
 3. Paste it in the app's Settings page or the banner that appears at the top
 
-Your key is stored in your browser's localStorage and sent directly to Google's API. It is never stored on any server.
+Your key is stored in your browser's localStorage and sent with each AI request to this app's API routes, which then call Google Gemini. The app does not persist your key server-side.
 
 ## Tech Stack
 
@@ -45,7 +45,7 @@ Your key is stored in your browser's localStorage and sent directly to Google's 
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
 - **AI**: [Google Gemini 2.0 Flash](https://ai.google.dev) via `@google/generative-ai`
 - **Fonts**: IBM Plex Sans / Mono / Serif
-- **Storage**: localStorage with custom event-driven reactivity (`useSyncExternalStore`)
+- **Storage**: localStorage + IndexedDB (documents), with custom event-driven reactivity (`useSyncExternalStore`)
 
 ## Project Structure
 
@@ -67,7 +67,8 @@ components/
   ui/                         # shadcn/ui components
 lib/
   types.ts                    # All interfaces and enums
-  storage.ts                  # localStorage abstraction with event dispatch
+  storage.ts                  # localStorage state + shared persistence helpers
+  document-db.ts              # IndexedDB storage for uploaded documents
   gemini.ts                   # Gemini client helpers
   constants.ts                # Status colors, labels, defaults
 hooks/

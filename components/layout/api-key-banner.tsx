@@ -7,7 +7,6 @@ import { getApiKey, setApiKey } from "@/lib/storage";
 import { useStorage } from "@/hooks/use-storage";
 import { Key, ExternalLink, X, Check } from "lucide-react";
 import { toast } from "sonner";
-import Link from "next/link";
 
 export function ApiKeyBanner() {
   const apiKey = useStorage(getApiKey);
@@ -47,7 +46,7 @@ export function ApiKeyBanner() {
                 Google AI Studio
                 <ExternalLink className="h-3 w-3" />
               </a>
-              {" "}— your key stays in your browser, never on our servers.
+              {" "}— stored in your browser and sent with each AI request. We do not persist it server-side.
             </p>
           </div>
         </div>

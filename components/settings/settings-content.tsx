@@ -166,7 +166,7 @@ export function SettingsContent() {
 
             <div className="rounded-lg bg-muted p-3 mt-3">
               <p className="text-xs text-muted-foreground">
-                <strong>Privacy:</strong> Your API key is stored only in your browser&apos;s localStorage and sent directly to Google&apos;s API. It is never stored on any server. Each user needs their own key.
+                <strong>Privacy:</strong> Your API key is stored in browser localStorage and sent with AI requests to this app&apos;s API routes, which then call Google Gemini. The app does not persist your key server-side.
               </p>
             </div>
           </div>
