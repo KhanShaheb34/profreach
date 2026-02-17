@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getApiKey, setApiKey } from "@/lib/storage";
@@ -12,6 +12,13 @@ export function ApiKeyBanner() {
   const apiKey = useStorage(getApiKey);
   const [input, setInput] = useState("");
   const [dismissed, setDismissed] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  if (!mounted) return null;
 
   if (dismissed || apiKey) return null;
 
