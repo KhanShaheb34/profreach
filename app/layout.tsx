@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   title: "Profreach — Professor Outreach Tracker",
   description:
     "Track your grad school professor outreach, draft emails with AI, and manage your application pipeline.",
+  icons: {
+    icon: "/profreach-icon.svg",
+    shortcut: "/profreach-icon.svg",
+    apple: "/profreach-icon.svg",
+  },
 };
 
 export default function RootLayout({

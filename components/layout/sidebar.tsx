@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, User, Download, Settings, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -84,7 +85,13 @@ export function Sidebar() {
             <SheetContent side="left" className="w-64 p-0">
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               <div className="flex h-14 items-center gap-2 border-b px-4">
-                <GraduationCap className="h-6 w-6 text-primary" />
+                <Image
+                  src="/profreach-icon.svg"
+                  alt="Profreach logo"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
                 <span className="text-lg font-bold">Profreach</span>
               </div>
               <div className="py-4">
@@ -95,7 +102,13 @@ export function Sidebar() {
               </div>
             </SheetContent>
           </Sheet>
-          <GraduationCap className="h-5 w-5 text-primary" />
+          <Image
+            src="/profreach-icon.svg"
+            alt="Profreach logo"
+            width={20}
+            height={20}
+            className="h-5 w-5"
+          />
           <span className="font-bold">Profreach</span>
         </div>
         <ThemeToggle />
@@ -105,7 +118,13 @@ export function Sidebar() {
       <aside className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:border-r md:bg-background">
         <div className="flex h-14 items-center justify-between border-b px-6">
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-primary" />
+            <Image
+              src="/profreach-icon.svg"
+              alt="Profreach logo"
+              width={24}
+              height={24}
+              className="h-6 w-6"
+            />
             <span className="text-lg font-bold">Profreach</span>
           </div>
           <ThemeToggle />
