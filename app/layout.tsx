@@ -29,9 +29,12 @@ export const metadata: Metadata = {
   description:
     "Track your grad school professor outreach, draft emails with AI, and manage your application pipeline.",
   icons: {
-    icon: "/profreach-icon.svg",
-    shortcut: "/profreach-icon.svg",
-    apple: "/profreach-icon.svg",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icon.svg",
   },
 };
 
