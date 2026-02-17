@@ -1,5 +1,5 @@
-import { DashboardContent } from "@/components/dashboard/dashboard-content";
+import { HomeEntry } from "@/components/landing/home-entry";
 
 export default function DashboardPage() {
-  return <DashboardContent />;
+  return <HomeEntry />;
 }

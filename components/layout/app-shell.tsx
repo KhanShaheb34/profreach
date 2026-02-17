@@ -1,9 +1,38 @@
 "use client";
 
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { ApiKeyBanner } from "./api-key-banner";
+import { useMockAuth } from "@/hooks/use-mock-auth";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, isReady } = useMockAuth();
+  const isLandingRoute = pathname === "/";
+
+  useEffect(() => {
+    if (isReady && !isAuthenticated && !isLandingRoute) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, isLandingRoute, isReady, router]);
+
+  if (!isReady) {
+    if (isLandingRoute) {
+      return <main>{children}</main>;
+    }
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    if (!isLandingRoute) {
+      return null;
+    }
+
+    return <main>{children}</main>;
+  }
+
   return (
     <div className="min-h-screen">
       <Sidebar />

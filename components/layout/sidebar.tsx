@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, User, Download, Settings, GraduationCap, Menu, Moon, Sun, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
+import { setIsAuthenticated } from "@/lib/storage";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -65,6 +66,13 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  function handleLogout() {
+    setIsAuthenticated(false);
+    router.replace("/");
+    setOpen(false);
+  }
 
   return (
     <>
@@ -86,6 +94,12 @@ export function Sidebar() {
               <div className="py-4">
                 <NavLinks onNavigate={() => setOpen(false)} />
               </div>
+              <div className="border-t p-3">
+                <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" />
+                  Log Out
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
           <GraduationCap className="h-5 w-5 text-primary" />
@@ -105,6 +119,12 @@ export function Sidebar() {
         </div>
         <div className="flex-1 py-4">
           <NavLinks />
+        </div>
+        <div className="border-t p-3">
+          <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
+            <LogOut className="h-4 w-4" />
+            Log Out
+          </Button>
         </div>
       </aside>
     </>
