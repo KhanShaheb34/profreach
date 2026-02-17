@@ -1,4 +1,16 @@
-import type { Professor, Profile, Document, MemoryItem, ChatMessage, EmailDraft, AppData } from "./types";
+import {
+  ApplicationStatus,
+  DocumentCategory,
+  EmailTemplate,
+  HiringStatus,
+  type Professor,
+  type Profile,
+  type Document,
+  type MemoryItem,
+  type ChatMessage,
+  type EmailDraft,
+  type AppData,
+} from "./types";
 import { DEFAULT_PROFILE } from "./constants";
 
 const STORAGE_EVENT = "profreach-storage-change";
@@ -11,6 +23,221 @@ const KEYS = {
   drafts: "profreach:drafts",
   apiKey: "profreach:gemini-api-key",
 } as const;
+
+const VALID_IMPORT_KEYS = [
+  "professors",
+  "profile",
+  "documents",
+  "memory",
+  "chats",
+  "drafts",
+] as const;
+const APPLICATION_STATUS_VALUES = Object.values(ApplicationStatus);
+const HIRING_STATUS_VALUES = Object.values(HiringStatus);
+const DOCUMENT_CATEGORY_VALUES = Object.values(DocumentCategory);
+const EMAIL_TEMPLATE_VALUES = Object.values(EmailTemplate);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function asString(value: unknown, fallback = ""): string {
+  return typeof value === "string" ? value : fallback;
+}
+
+function asNumber(value: unknown, fallback = 0): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function asEnum<T extends string>(
+  value: unknown,
+  allowed: readonly T[],
+  fallback: T,
+): T {
+  return typeof value === "string" && allowed.includes(value as T)
+    ? (value as T)
+    : fallback;
+}
+
+function sanitizeProfessor(value: unknown): Professor | null {
+  if (!isRecord(value)) return null;
+  const id = asString(value.id).trim();
+  const name = asString(value.name).trim();
+  if (!id || !name) return null;
+
+  const now = new Date().toISOString();
+  return {
+    id,
+    name,
+    email: asString(value.email),
+    university: asString(value.university),
+    department: asString(value.department),
+    country: asString(value.country),
+    researchAreas: asStringArray(value.researchAreas),
+    recentPapers: asStringArray(value.recentPapers),
+    websiteUrl: asString(value.websiteUrl),
+    scholarUrl: asString(value.scholarUrl),
+    hiringStatus: asEnum(
+      value.hiringStatus,
+      HIRING_STATUS_VALUES,
+      HiringStatus.Unknown,
+    ),
+    applicationStatus: asEnum(
+      value.applicationStatus,
+      APPLICATION_STATUS_VALUES,
+      ApplicationStatus.Interested,
+    ),
+    notes: asString(value.notes),
+    lastContacted:
+      typeof value.lastContacted === "string" ? value.lastContacted : null,
+    createdAt: asString(value.createdAt, now),
+    updatedAt: asString(value.updatedAt, now),
+  };
+}
+
+function sanitizeProfile(value: unknown): Profile {
+  if (!isRecord(value)) return DEFAULT_PROFILE;
+  return {
+    name: asString(value.name),
+    email: asString(value.email),
+    university: asString(value.university),
+    degree: asString(value.degree),
+    field: asString(value.field),
+    gpa: asString(value.gpa),
+    researchInterests: asStringArray(value.researchInterests),
+    skills: asStringArray(value.skills),
+    publications: asStringArray(value.publications),
+    workExperience: asString(value.workExperience),
+    summary: asString(value.summary),
+  };
+}
+
+function sanitizeDocument(value: unknown): Document | null {
+  if (!isRecord(value)) return null;
+  const id = asString(value.id).trim();
+  const name = asString(value.name).trim();
+  if (!id || !name) return null;
+
+  return {
+    id,
+    name,
+    category: asEnum(
+      value.category,
+      DOCUMENT_CATEGORY_VALUES,
+      DocumentCategory.Other,
+    ),
+    content: asString(value.content),
+    mimeType: asString(value.mimeType),
+    size: asNumber(value.size),
+    createdAt: asString(value.createdAt, new Date().toISOString()),
+  };
+}
+
+function sanitizeMemoryItem(value: unknown): MemoryItem | null {
+  if (!isRecord(value)) return null;
+  const id = asString(value.id).trim();
+  const content = asString(value.content).trim();
+  if (!id || !content) return null;
+
+  return {
+    id,
+    content,
+    source: asString(value.source, "manual"),
+    tags: asStringArray(value.tags),
+    createdAt: asString(value.createdAt, new Date().toISOString()),
+  };
+}
+
+function sanitizeChatMessage(value: unknown): ChatMessage | null {
+  if (!isRecord(value)) return null;
+  const id = asString(value.id).trim();
+  const professorId = asString(value.professorId).trim();
+  const content = asString(value.content).trim();
+  if (!id || !professorId || !content) return null;
+
+  const role =
+    value.role === "assistant"
+      ? "assistant"
+      : value.role === "user"
+        ? "user"
+        : null;
+  if (!role) return null;
+
+  return {
+    id,
+    professorId,
+    role,
+    content,
+    createdAt: asString(value.createdAt, new Date().toISOString()),
+  };
+}
+
+function sanitizeDraft(value: unknown): EmailDraft | null {
+  if (!isRecord(value)) return null;
+  const id = asString(value.id).trim();
+  const professorId = asString(value.professorId).trim();
+  if (!id || !professorId) return null;
+
+  return {
+    id,
+    professorId,
+    template: asEnum(
+      value.template,
+      EMAIL_TEMPLATE_VALUES,
+      EmailTemplate.Custom,
+    ),
+    subject: asString(value.subject),
+    body: asString(value.body),
+    createdAt: asString(value.createdAt, new Date().toISOString()),
+  };
+}
+
+function sanitizeImportData(data: unknown): AppData {
+  if (!isRecord(data)) {
+    throw new Error("Backup file must be a JSON object.");
+  }
+
+  const hasKnownKeys = VALID_IMPORT_KEYS.some((key) => key in data);
+  if (!hasKnownKeys) {
+    throw new Error(
+      "Backup file does not contain expected Profreach data keys.",
+    );
+  }
+
+  return {
+    professors: Array.isArray(data.professors)
+      ? data.professors
+          .map(sanitizeProfessor)
+          .filter((item): item is Professor => item !== null)
+      : [],
+    profile: sanitizeProfile(data.profile),
+    documents: Array.isArray(data.documents)
+      ? data.documents
+          .map(sanitizeDocument)
+          .filter((item): item is Document => item !== null)
+      : [],
+    memory: Array.isArray(data.memory)
+      ? data.memory
+          .map(sanitizeMemoryItem)
+          .filter((item): item is MemoryItem => item !== null)
+      : [],
+    chats: Array.isArray(data.chats)
+      ? data.chats
+          .map(sanitizeChatMessage)
+          .filter((item): item is ChatMessage => item !== null)
+      : [],
+    drafts: Array.isArray(data.drafts)
+      ? data.drafts
+          .map(sanitizeDraft)
+          .filter((item): item is EmailDraft => item !== null)
+      : [],
+  };
+}
 
 function emit(key: string) {
   window.dispatchEvent(new CustomEvent(STORAGE_EVENT, { detail: { key } }));
@@ -185,13 +412,14 @@ export function exportAll(): AppData {
   };
 }
 
-export function importAll(data: AppData) {
-  setProfessors(data.professors ?? []);
-  setProfile(data.profile ?? DEFAULT_PROFILE);
-  setDocuments(data.documents ?? []);
-  setMemory(data.memory ?? []);
-  setChats(data.chats ?? []);
-  setDrafts(data.drafts ?? []);
+export function importAll(data: unknown) {
+  const sanitized = sanitizeImportData(data);
+  setProfessors(sanitized.professors);
+  setProfile(sanitized.profile);
+  setDocuments(sanitized.documents);
+  setMemory(sanitized.memory);
+  setChats(sanitized.chats);
+  setDrafts(sanitized.drafts);
 }
 
 // Subscribe helper for useSyncExternalStore

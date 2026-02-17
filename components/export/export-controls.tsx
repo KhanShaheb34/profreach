@@ -36,8 +36,8 @@ export function ExportControls() {
         const data = JSON.parse(reader.result as string);
         importAll(data);
         toast.success("Data imported successfully");
-      } catch {
-        toast.error("Invalid backup file");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Invalid backup file");
       }
     };
     reader.readAsText(file);
@@ -106,6 +106,7 @@ export function ExportControls() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleImport(file);
+                e.currentTarget.value = "";
               }}
             />
             <Button variant="outline" onClick={() => inputRef.current?.click()}>

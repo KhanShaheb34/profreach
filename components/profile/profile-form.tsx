@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,29 +13,35 @@ import { toast } from "sonner";
 
 export function ProfileForm() {
   const profile = useStorage(getProfile);
-  const [form, setForm] = useState<Profile | null>(null);
+  const [draft, setDraft] = useState<Partial<Profile>>({});
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pendingDraftRef = useRef<Partial<Profile>>({});
+  const latestProfileRef = useRef(profile);
+  latestProfileRef.current = profile;
+
+  const form: Profile = { ...profile, ...draft };
 
   useEffect(() => {
-    if (profile && !form) {
-      setForm(profile);
-    }
-  }, [profile, form]);
+    return () => clearTimeout(saveTimer.current);
+  }, []);
 
   function handleChange(updates: Partial<Profile>) {
-    if (!form) return;
-    const updated = { ...form, ...updates };
-    setForm(updated);
+    pendingDraftRef.current = { ...pendingDraftRef.current, ...updates };
+    setDraft(pendingDraftRef.current);
 
     // Auto-save with debounce
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
+      const updated = {
+        ...latestProfileRef.current,
+        ...pendingDraftRef.current,
+      };
       setProfile(updated);
+      pendingDraftRef.current = {};
+      setDraft({});
       toast.success("Profile saved", { duration: 1500 });
     }, 1000);
   }
-
-  if (!form) return null;
 
   return (
     <Card>
