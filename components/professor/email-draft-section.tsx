@@ -21,7 +21,7 @@ import { useStorage } from "@/hooks/use-storage";
 import { EmailTemplate } from "@/lib/types";
 import { EMAIL_TEMPLATE_LABELS } from "@/lib/constants";
 import type { Professor } from "@/lib/types";
-import { Sparkles, Copy, Loader2, Trash2, Mail } from "lucide-react";
+import { Sparkles, Copy, Loader2, Trash2, Mail, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useCallback } from "react";
 
@@ -83,6 +83,11 @@ export function EmailDraftSection({ professor }: { professor: Professor }) {
     toast.success("Copied to clipboard");
   }
 
+  function handleOpenInMailClient() {
+    const mailto = `mailto:${professor.email || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto, "_blank");
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -131,6 +136,10 @@ export function EmailDraftSection({ professor }: { professor: Professor }) {
           <Button variant="outline" size="sm" onClick={handleCopy} disabled={!body}>
             <Copy className="h-4 w-4 mr-1" />
             Copy
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleOpenInMailClient} disabled={!body}>
+            <ExternalLink className="h-4 w-4 mr-1" />
+            Open in Mail
           </Button>
           <Button size="sm" onClick={handleSaveDraft} disabled={!subject && !body}>
             Save Draft
